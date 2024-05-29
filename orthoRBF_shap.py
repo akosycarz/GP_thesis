@@ -35,8 +35,8 @@ y_train = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()  # Flatten back
 y_test = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
 
 # Convert to torch tensors
-train_x = torch.tensor(train_x, dtype=torch.float32)
-test_x = torch.tensor(test_x, dtype=torch.float32)
+train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
+test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
 y_train = torch.tensor(y_train, dtype=torch.float32)
 y_test = torch.tensor(y_test, dtype=torch.float32)
 
