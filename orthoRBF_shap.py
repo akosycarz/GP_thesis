@@ -243,6 +243,11 @@ with torch.no_grad():
     
 
 # print(torch.sum(alpha_hat_eta))
+# the vector with sigma values
+sigmas = model.covar_module.raw_outputscale.data.T
+print(sigmas.shape)
+print(sigmas[0])
+sigma_1 = sigmas[0]
 
 n, d = train_x.shape
 model.eval()
@@ -305,7 +310,7 @@ def Omega(X, i, q_additivity=None, feature_type='numerical'):
         
         sum_current = temp_sum
   
-
+    dp[:, 0, :] = sigmas * dp[:, 0, :] # multiply each row of the matrix by corresponding sigma value
     # Sum up all contributions from the first dimension of each feature to get the final values
     omega = torch.sum(dp[:, 0, :], axis=0)
     
