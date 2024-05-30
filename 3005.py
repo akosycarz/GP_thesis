@@ -13,63 +13,37 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 
-# # Load data
-# diabetes = load_diabetes()
-# X, y = diabetes.data, diabetes.target
-# X = X[:, :3]
-# # Split the data into training and testing sets
-# train_x, test_x, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # 20% data as test
 
 
-# # Create a StandardScaler object
-# scaler = StandardScaler()
-
-# # Fit the scaler to the training data and transform it
-# train_x_scaled = scaler.fit_transform(train_x)
-
-# # Transform the test data using the same scaler
-# test_x_scaled = scaler.transform(test_x)
-# #scale target
-# scaler_y = StandardScaler()
-# y_train = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()  # Flatten back to 1D array
-# y_test = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
-
-# # Convert to torch tensors
-# train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
-# test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
-# y_train = torch.tensor(y_train, dtype=torch.float32)
-# y_test = torch.tensor(y_test, dtype=torch.float32)
-import numpy as np
-import pandas as pd
-
-# Set random seed for reproducibility
+# Generate synthetic data
 np.random.seed(42)
-
-# Define the number of samples and features
 num_samples = 200
 num_features = 10
-
-# Generate random data
-X = np.random.randn(num_samples, num_features)  # Normally distributed features
-# Calculate y using the specified function
+X = np.random.randn(num_samples, num_features)
 y = np.sin(X[:, 0]**2) - 2 * X[:, 0] * X[:, 1] + np.exp(X[:, 0]**2 * X[:, 1])
-"""
-y = sin(x_1^2)- 2*x_1*x_2 + exp(x_1^2*x_2)
-"""
 
-# Convert to DataFrame for easier manipulation and visualization
-data = pd.DataFrame(X, columns=[f'x_{i}' for i in range(num_features)])
-data['target'] = y
+# Split the data
+train_x, test_x, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Display the first few rows of the dataset
-# print(data.head())
-train_x, test_x, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # 20% data as test
+# Initialize the scaler
+scaler_x = StandardScaler()
+scaler_y = StandardScaler()
+
+# Fit and transform the training data
+train_x_scaled = scaler_x.fit_transform(train_x)
+y_train_scaled = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()
+
+# Transform the test data
+test_x_scaled = scaler_x.transform(test_x)
+y_test_scaled = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
 
 # Convert to torch tensors
-train_x = torch.tensor(train_x, dtype=torch.float32)
-test_x = torch.tensor(test_x, dtype=torch.float32)
-y_train = torch.tensor(y_train, dtype=torch.float32)
+train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
+test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
+y_train = torch.tensor(y_train_scaled, dtype=torch.float32)
+y_test = torch.tensor(y_test_scaled, dtype=torch.float32)
 y_test = torch.tensor(y_test, dtype=torch.float32)
+
 
 class OrthogonalRBF(gpytorch.kernels.Kernel):
     has_lengthscale = True
