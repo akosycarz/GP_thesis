@@ -255,7 +255,7 @@ likelihood.eval()
 
 with torch.no_grad():
     # kernel = model.covar_module
-    kernel = OrthoRBF()
+    kernel =  model.base_kernel
 
     # Initialize the matrix K with zeros
     K_per_feature = torch.zeros((n, d))
