@@ -42,7 +42,7 @@ train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
 test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
 y_train = torch.tensor(y_train_scaled, dtype=torch.float32)
 y_test = torch.tensor(y_test_scaled, dtype=torch.float32)
-y_test = torch.tensor(y_test, dtype=torch.float32)
+y_test = torch.tensor(y_test_scaled, dtype=torch.float32)
 
 
 class OrthogonalRBF(gpytorch.kernels.Kernel):
