@@ -211,16 +211,24 @@ for i in range(training_iter):
 model.eval()
 likelihood.eval()
 
-# Plotting the outputscales and loss
-import matplotlib.pyplot as plt
-plt.figure(figsize=(10, 5))  # Increase figure size for better visibility
-plt.plot(outputscale_history, label='Outputscale', color='blue')  # Plot outputscale
-plt.plot(loss_history, label='Loss', color='red')  # Plot loss
-plt.title('Training Metrics Over Iterations')
-plt.xlabel('Iteration')
-plt.ylabel('Values')
-plt.legend()  # Include legend to identify the lines
 
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.plot(loss_history, label='Training Loss')
+plt.title('Training Loss Over Time')
+plt.xlabel('Iteration')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(outputscale_history, label='Output Scale')
+plt.title('Output Scale Changes')
+plt.xlabel('Iteration')
+plt.ylabel('Scale')
+plt.legend()
+
+plt.tight_layout()
 plt.show()
 
 
