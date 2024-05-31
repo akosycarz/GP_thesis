@@ -156,9 +156,13 @@ class DP_additive_kernel(gpytorch.kernels.Kernel):
             # Get into evaluation (predictive posterior) mode
             observed_pred = likelihood(self(train_x, test_x))
             mean = observed_pred.mean
-            lower, upper = observed_pred.confidence_region()
+            var = observed_pred.variance
 
-        return mean, lower, upper
+            # Scale the predictions by the learned output scales
+            scaled_mean = mean * self.outputscale
+            scaled_var = var * (self.outputscale ** 2)
+
+            return scaled_mean, scaled_var
 
 
 # Example usage in a GP model
