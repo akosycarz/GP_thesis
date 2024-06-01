@@ -130,17 +130,12 @@ class DPadditveKernel(gpytorch.kernels.Kernel):
     
 
         # Compute the covariance matrix for each feature
-        for i in range(d):
-            # Extract the i-th feature and reshape to (n, 1)
-            feature_column = train_x[:, i].unsqueeze(1)
-            # Apply the kernel to the feature column
-            # Since kernel operates on (n, 1) input, it outputs an (n, n) covariance matrix
-            covariance_matrix = self.base_kernel(feature_column).evaluate()
+        for d in range(self.num_dims):
+            x1_d = x1[:, d:d+1]
+            x2_d = x2[:, d:d+1]
+            dp[0, d, :, :] = self.base_kernel(x1_d, x2_d).evaluate()
+            current_sum += dp[0, d, :, :]
 
-            # Store the computed covariance matrix in the tensor
-            dp[0,i, :, :] = covariance_matrix
-
-            current_sum +=  dp[0,i, :, :]
 
         #for the higher orders
         for i in range(1, self.q_additivity):
