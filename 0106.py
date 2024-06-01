@@ -16,66 +16,42 @@ from sklearn.model_selection import train_test_split
 
 
 
-# np.random.seed(42)
+np.random.seed(42)
 
-# # Define the number of samples
-# num_samples = 200
+# Define the number of samples
+num_samples = 200
 
-# # Generate features X1 to X10 from N(0,1)
-# X = np.random.normal(0, 1, (num_samples, 10))
-# y = np.sin(X[:, 0]**2) - 2 * X[:, 0] * X[:, 1] + np.exp(X[:, 0]**2 * X[:, 2])
+# Generate features X1 to X10 from N(0,1)
+X = np.random.normal(0, 1, (num_samples, 10))
+y = np.sin(X[:, 0]**2) - 2 * X[:, 0] * X[:, 1] + np.exp(X[:, 0]**2 * X[:, 2])
 
 
-# # Split the data into training and testing sets
-# from sklearn.model_selection import train_test_split
-# train_x, test_x, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # 20% data as test
-
-# # Initialize the scaler for features and target
-# scaler_x = StandardScaler()
-# # scaler_y = StandardScaler()
-
-# # Fit and transform the training data
-# train_x_scaled = scaler_x.fit_transform(train_x)
-# # y_train_scaled = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()
-
-# # Transform the test data
-# test_x_scaled = scaler_x.transform(test_x)
-# # y_test_scaled = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
-
-# # Convert to torch tensors
-# train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
-# test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
-# # y_train = torch.tensor(y_train_scaled, dtype=torch.float32)
-# # y_test = torch.tensor(y_test_scaled, dtype=torch.float32)
-# y_train = torch.tensor(y_train, dtype=torch.float32)
-# y_test = torch.tensor(y_test, dtype=torch.float32)
-from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
-diabetes = load_diabetes()
-X, y = diabetes.data, diabetes.target
-X = X[:, :3]
 # Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
 train_x, test_x, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # 20% data as test
 
+# Initialize the scaler for features and target
+scaler_x = StandardScaler()
+#not scalling the target values
+# scaler_y = StandardScaler()
 
-# Create a StandardScaler object
-scaler = StandardScaler()
+# Fit and transform the training data
+train_x_scaled = scaler_x.fit_transform(train_x)
+# y_train_scaled = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()
 
-# Fit the scaler to the training data and transform it
-train_x_scaled = scaler.fit_transform(train_x)
-
-# Transform the test data using the same scaler
-test_x_scaled = scaler.transform(test_x)
-#scale target
-scaler_y = StandardScaler()
-y_train = scaler_y.fit_transform(y_train.reshape(-1, 1)).ravel()  # Flatten back to 1D array
-y_test = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
+# Transform the test data
+test_x_scaled = scaler_x.transform(test_x)
+# y_test_scaled = scaler_y.transform(y_test.reshape(-1, 1)).ravel()
 
 # Convert to torch tensors
 train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
 test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
+# y_train = torch.tensor(y_train_scaled, dtype=torch.float32)
+# y_test = torch.tensor(y_test_scaled, dtype=torch.float32)
 y_train = torch.tensor(y_train, dtype=torch.float32)
 y_test = torch.tensor(y_test, dtype=torch.float32)
+]
+
 
 class OrthogonalRBF(gpytorch.kernels.Kernel):
     has_lengthscale = True
@@ -119,7 +95,7 @@ class OrthogonalRBF(gpytorch.kernels.Kernel):
         result = base_kernel - adjustment
         return result.diag() if diag else result
 
-class DPadditveKerenel(gpytorch.kernels.Kernel):
+class DPadditveKernel(gpytorch.kernels.Kernel):
     def __init__(self, base_kernel, num_dims, q_additivity, **kwargs):
         super().__init__(**kwargs)
         self.base_kernel = base_kernel
@@ -196,7 +172,7 @@ class AGP_model(gpytorch.models.ExactGP): # i need to find a diferent model
         self.mean_module = gpytorch.means.ZeroMean()
         # self.base_kernel = gpytorch.kernels.RBFKernel()
         self.base_kernel = OrthogonalRBF()
-        self.covar_module = DPadditveKerenel(base_kernel=self.base_kernel, num_dims=train_x.size(-1), q_additivity=train_x.size(-1))
+        self.covar_module = DPadditveKernel(base_kernel=self.base_kernel, num_dims=train_x.size(-1), q_additivity=train_x.size(-1))
 
     def forward(self, x):
         mean_x = self.mean_module(x)
