@@ -105,7 +105,7 @@ class ConstrainedRBFKernel(gpytorch.kernels.Kernel):
         return self.forward(x1, x2)
     
 # Creating  AGP model with Newton Girard additive kernel
-class TestGPModel(ExactGP):
+class AGPModel(ExactGP):
     def __init__(self, train_x, train_y, likelihood):
         super().__init__(train_x, train_y, likelihood)
         self.mean_module = gpytorch.means.ZeroMean()
@@ -117,7 +117,7 @@ class TestGPModel(ExactGP):
         return MultivariateNormal(mean_x, covar_x)
 
 likelihood = GaussianLikelihood()
-model = TestGPModel(train_x, y_train, likelihood)
+model = AGPModel(train_x, y_train, likelihood)
 
 # Training procedure
 model.train()
