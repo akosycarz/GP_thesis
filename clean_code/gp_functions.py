@@ -34,7 +34,7 @@ class ConstrainedRBFKernel(gpytorch.kernels.Kernel):
         scaled_constrain = scaling_factor * constrain
         base = postprocess_rbf(self.covar_dist(x1_, x2_, square_dist=True, diag=diag, **params)) - scaled_constrain
 
-        return base #- scaled_constrain
+        return base
 
 class ConstrainedRBFKernel_NotWorking(gpytorch.kernels.Kernel):
     # has_lengthscale = True
